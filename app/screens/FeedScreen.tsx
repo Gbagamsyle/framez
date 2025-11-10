@@ -60,7 +60,9 @@ export function FeedScreen() {
 
   return (
     <View style={[styles.container, { backgroundColor: theme.background }] }>
-      <Header title="Feed" rightComponent={headerRight} />
+      <View style={styles.headerWrapper}>
+        <Header title="Feed" rightComponent={headerRight} />
+      </View>
       <FlatList
         data={posts}
         keyExtractor={(item) => item.id}
@@ -77,6 +79,9 @@ export function FeedScreen() {
 export default FeedScreen;
 
 const styles = StyleSheet.create({
+  headerWrapper: {
+    paddingTop: 32,
+  },
   container: {
     flex: 1,
     backgroundColor: '#f8f8f8',

@@ -1,5 +1,5 @@
 import React, { useEffect } from 'react';
-import { Animated, Platform, StyleSheet, View } from 'react-native';
+import { Animated, StyleSheet, View } from 'react-native';
 
 function SplashScreenComponent() {
   const fadeAnim = React.useRef(new Animated.Value(0)).current;
@@ -27,17 +27,17 @@ function SplashScreenComponent() {
 
   return (
     <View style={styles.container}>
-      <Animated.Text 
+      <Animated.Image
+        source={require('../../assets/images/Framez logo.png')}
         style={[
-          styles.logo, 
-          { 
+          styles.logo,
+          {
             opacity: fadeAnim,
-            transform: [{ scale: scaleAnim }] 
+            transform: [{ scale: scaleAnim }]
           }
         ]}
-      >
-        FRAMEZ
-      </Animated.Text>
+        resizeMode="contain"
+      />
     </View>
   );
 }
@@ -52,15 +52,8 @@ const styles = StyleSheet.create({
     justifyContent: 'center',
   },
   logo: {
-    fontFamily: Platform.OS === 'ios' ? 'Helvetica Neue' : 'sans-serif',
-    fontWeight: '700',
-    fontSize: 64,
-    color: '#FFFFFF',
-    textShadowColor: 'rgba(255, 255, 255, 0.5)',
-    textShadowOffset: { width: 0, height: 2 },
-    textShadowRadius: 8,
-    letterSpacing: 6,
-    includeFontPadding: false,
-    padding: 20,
+    width: 200,
+    height: 200,
+    margin: 20,
   },
 });

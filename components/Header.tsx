@@ -1,6 +1,6 @@
 import { Ionicons } from '@expo/vector-icons';
 import React from 'react';
-import { StyleSheet, Text, TouchableOpacity, View } from 'react-native';
+import { Image, StyleSheet, Text, TouchableOpacity, View } from 'react-native';
 import { Colors } from '../constants/theme';
 import { useTheme } from '../context/ThemeContext';
 
@@ -17,10 +17,16 @@ export function Header({ title, showBack, onBack, rightComponent }: HeaderProps)
   return (
     <View style={[styles.container, { backgroundColor: theme.card, borderBottomColor: theme.cardBorder }]}>
       <View style={styles.leftContainer}>
-        {showBack && (
+        {showBack ? (
           <TouchableOpacity onPress={onBack} style={styles.backButton}>
             <Ionicons name="chevron-back" size={24} color={theme.text} />
           </TouchableOpacity>
+        ) : (
+          <Image
+            source={require('../assets/images/Framez logo.png')}
+            style={styles.logo}
+            resizeMode="contain"
+          />
         )}
       </View>
 
@@ -59,5 +65,9 @@ const styles = StyleSheet.create({
   title: {
     fontSize: 18,
     fontWeight: '600',
+  },
+  logo: {
+    width: 36,
+    height: 36,
   },
 });

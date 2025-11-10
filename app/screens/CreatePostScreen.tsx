@@ -97,23 +97,25 @@ export function CreatePostScreen() {
 
   return (
     <View style={[styles.container, { backgroundColor: theme.background, flex: 1 }] }>
-      <Header
-        title="Create Post"
-        showBack
-        onBack={() => navigation.goBack()}
-        rightComponent={
-          <TouchableOpacity
-            onPress={handlePost}
-            disabled={loading || (!text.trim() && !image)}
-          >
-            <Text
-              style={[styles.postButton, (!text.trim() && !image) && styles.postButtonDisabled, { color: theme.primary }]}
+      <View style={styles.headerWrapper}>
+        <Header
+          title="Create Post"
+          showBack
+          onBack={() => navigation.goBack()}
+          rightComponent={
+            <TouchableOpacity
+              onPress={handlePost}
+              disabled={loading || (!text.trim() && !image)}
             >
-              Post
-            </Text>
-          </TouchableOpacity>
-        }
-      />
+              <Text
+                style={[styles.postButton, (!text.trim() && !image) && styles.postButtonDisabled, { color: theme.primary }]}
+              >
+                Post
+              </Text>
+            </TouchableOpacity>
+          }
+        />
+      </View>
       {loading && (
         <View style={styles.loadingOverlay}>
           <ActivityIndicator size="large" color={theme.primary} />
@@ -152,6 +154,9 @@ export function CreatePostScreen() {
 export default CreatePostScreen;
 
 const styles = StyleSheet.create({
+  headerWrapper: {
+    paddingTop: 32,
+  },
   container: {
     flex: 1,
     backgroundColor: 'white', // will be overridden by theme.background

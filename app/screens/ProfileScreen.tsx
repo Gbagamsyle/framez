@@ -152,15 +152,17 @@ export function ProfileScreen() {
   }
 
   return (
-    <View style={[styles.container, { backgroundColor: theme.background }]}>
-      <Header
-        title="Profile"
-        rightComponent={
-          <TouchableOpacity onPress={handleLogout}>
-            <Ionicons name="log-out-outline" size={24} color={theme.primary} />
-          </TouchableOpacity>
-        }
-      />
+    <View style={[styles.container, { backgroundColor: theme.background }]}> 
+      <View style={styles.headerWrapper}>
+        <Header
+          title="Profile"
+          rightComponent={
+            <TouchableOpacity onPress={handleLogout}>
+              <Ionicons name="log-out-outline" size={24} color={theme.primary} />
+            </TouchableOpacity>
+          }
+        />
+      </View>
 
       <FlatList
         data={posts}
@@ -181,6 +183,9 @@ export function ProfileScreen() {
 export default ProfileScreen;
 
 const styles = StyleSheet.create({
+  headerWrapper: {
+    paddingTop: 32,
+  },
   container: {
     flex: 1,
   },
