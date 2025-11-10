@@ -22,11 +22,13 @@ export function Header({ title, showBack, onBack, rightComponent }: HeaderProps)
             <Ionicons name="chevron-back" size={24} color={theme.text} />
           </TouchableOpacity>
         ) : (
-          <Image
-            source={require('../assets/images/Framez logo.png')}
-            style={styles.logo}
-            resizeMode="contain"
-          />
+          <View style={[styles.logoWrapper, { backgroundColor: isDark ? '#000000' : 'transparent' }]}>
+            <Image
+              source={require('../assets/images/Framez logo.png')}
+              style={styles.logo}
+              resizeMode="contain"
+            />
+          </View>
         )}
       </View>
 
@@ -69,5 +71,13 @@ const styles = StyleSheet.create({
   logo: {
     width: 36,
     height: 36,
+  },
+  logoWrapper: {
+    width: 40,
+    height: 40,
+    borderRadius: 8,
+    justifyContent: 'center',
+    alignItems: 'center',
+    overflow: 'hidden',
   },
 });
