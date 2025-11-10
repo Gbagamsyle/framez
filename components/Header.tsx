@@ -24,7 +24,7 @@ export function Header({ title, showBack, onBack, rightComponent }: HeaderProps)
         ) : (
           <View style={[styles.logoWrapper, { backgroundColor: isDark ? '#000000' : 'transparent' }]}>
             <Image
-              source={require('../assets/images/Framez logo.png')}
+              source={isDark ? require('../assets/images/frames dark mode logo.jpg') : require('../assets/images/Framez logo.png')}
               style={styles.logo}
               resizeMode="contain"
             />
