@@ -125,6 +125,7 @@ export function CreatePostScreen() {
         <TextInput
           style={[styles.input, { color: theme.text, backgroundColor: theme.inputBackground, borderRadius: 8, padding: 12 }]}
           placeholder="What's on your mind?"
+          placeholderTextColor={isDark ? theme.text : theme.placeholder}
           value={text}
           onChangeText={setText}
           multiline
