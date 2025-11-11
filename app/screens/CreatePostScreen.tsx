@@ -320,6 +320,8 @@ export function CreatePostScreen() {
       // For web, we send file (if you want to upload the cropped blob you need to convert it to file/blob)
       // For native, we pass the image uri (cropped)
       const imageToUpload = Platform.OS === 'web' ? imageFile : image;
+      
+      console.log('Starting post creation...');
       await createPost(
         user!.uid,
         user!.displayName || 'Anonymous',
@@ -327,17 +329,24 @@ export function CreatePostScreen() {
         imageToUpload || undefined,
         user?.photoURL || undefined,
       );
+      console.log('Post created successfully');
 
+      // Clear form immediately
       setText('');
       setImage(null);
       setImageFile(null);
       setOriginalImage(null);
-      navigation.goBack();
+      
+      // Give user visual feedback before navigating
+      setTimeout(() => {
+        setLoading(false);
+        navigation.goBack();
+      }, 500);
     } catch (error) {
       console.error('Error creating post:', error);
-      Alert.alert('Error', 'Failed to create post. Please try again.');
-    } finally {
       setLoading(false);
+      const errorMessage = error instanceof Error ? error.message : 'Failed to create post. Please try again.';
+      Alert.alert('Error', errorMessage);
     }
   };
 
