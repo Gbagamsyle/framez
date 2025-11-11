@@ -13,6 +13,8 @@ Before building for Appetize.io or releasing to production, verify all items bel
   - Or public read/write if testing with unauth users (NOT recommended for production)
 - [ ] Android package `com.gbagamscott.framez` is registered in Firebase Console (optional but recommended)
   - Go to **Project Settings** > **Your apps** and add the Android package name
+  - Firebase Project ID: `framez-123c7`
+  - Firebase Project Number: `595656282981`
 
 ## Environment Variables & Secrets ✅
 
