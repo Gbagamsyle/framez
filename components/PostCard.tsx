@@ -95,7 +95,7 @@ export function PostCard(props: PostCardProps) {
           />
           <View style={{ flex: 1 }}>
             <Text style={[styles.authorName, { color: theme.text }]}>{post.authorName}</Text>
-            <Text style={[styles.timestamp, { color: Colors.secondary }]}>{format(post.timestamp, 'MMM d, yyyy • h:mm a')}</Text>
+            <Text style={[styles.timestamp, { color: Colors.secondary }]}>{format(post.timestamp ?? new Date(), 'MMM d, yyyy • h:mm a')}</Text>
           </View>
           {/** show delete icon only when onDelete prop provided */}
           {props.onDelete && (

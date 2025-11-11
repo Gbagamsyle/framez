@@ -102,6 +102,16 @@ framez/
 
 ## Building for Production
 
+### Production Pre-Flight Checklist
+
+Before building, review the **[PRODUCTION_CHECKLIST.md](./PRODUCTION_CHECKLIST.md)** which includes:
+- Firebase setup verification
+- Environment variables & secrets
+- Code quality checks
+- Network connectivity tests
+- Testing checklist
+- Troubleshooting guide
+
 ### For Android
 
 ```bash
