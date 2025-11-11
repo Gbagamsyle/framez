@@ -197,7 +197,7 @@ export async function addComment(postId: string, authorId: string, authorName: s
       authorId,
       authorName,
       text,
-      timestamp: serverTimestamp(),
+      timestamp: new Date(), // Use client-side timestamp instead of serverTimestamp()
     } as any;
     // Use arrayUnion to append the comment object
     await updateDoc(postRef, {

@@ -1,6 +1,6 @@
 import { useNavigation, useRoute } from '@react-navigation/native';
 import React, { useEffect, useState } from 'react';
-import { ActivityIndicator, KeyboardAvoidingView, Platform, StyleSheet, Text, TextInput, TouchableOpacity, View } from 'react-native';
+import { ActivityIndicator, KeyboardAvoidingView, Platform, ScrollView, StyleSheet, Text, TextInput, TouchableOpacity, View } from 'react-native';
 import { Header } from '../../components/Header';
 import { PostCard } from '../../components/PostCard';
 import { Colors } from '../../constants/theme';
@@ -31,7 +31,11 @@ export function PostDetailScreen() {
   }, [postId]);
 
   return (
-    <KeyboardAvoidingView style={[styles.container, { backgroundColor: theme.background }]} behavior={Platform.OS === 'ios' ? 'padding' : undefined}>
+    <KeyboardAvoidingView 
+      style={[styles.container, { backgroundColor: theme.background }]} 
+      behavior={Platform.OS === 'ios' ? 'padding' : 'height'}
+      keyboardVerticalOffset={Platform.OS === 'ios' ? 0 : 100}
+    >
       <View style={styles.headerWrapper}>
         <Header title="Post" showBack onBack={() => navigation.goBack()} />
       </View>
@@ -42,9 +46,11 @@ export function PostDetailScreen() {
         </View>
       ) : post ? (
         <>
-          <PostCard post={post as any} />
+          <ScrollView style={styles.scrollView} contentContainerStyle={styles.scrollContent}>
+            <PostCard post={post as any} />
+          </ScrollView>
 
-          <View style={{ paddingHorizontal: 16, paddingVertical: 12 }}>
+          <View style={{ paddingHorizontal: 16, paddingVertical: 12, backgroundColor: theme.background, borderTopWidth: 1, borderTopColor: Colors.cardBorder }}>
             <Text style={{ color: theme.text, marginBottom: 8, fontWeight: '600' }}>Add a comment</Text>
             <View style={{ flexDirection: 'row', alignItems: 'center' }}>
               <TextInput
@@ -93,6 +99,12 @@ const styles = StyleSheet.create({
   },
   container: {
     flex: 1,
+  },
+  scrollView: {
+    flex: 1,
+  },
+  scrollContent: {
+    paddingBottom: 16,
   },
   centered: {
     flex: 1,

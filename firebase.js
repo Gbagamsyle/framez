@@ -44,7 +44,7 @@ try {
   const masked = _apiKey ? `${_apiKey.slice(0, 4)}...${_apiKey.slice(-4)}` : '<<missing>>';
   // Use console.debug so it is less noisy; still visible in device logs.
   console.debug('[DEBUG] Firebase apiKey (masked):', masked);
-} catch (e) {
+} catch (_e) {
   // ignore
 }
 
