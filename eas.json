@@ -7,6 +7,7 @@
       "android": {
         "buildType": "apk"
       },
+      "credentialsSource": "remote",
       "ios": {
         "simulator": true
       },
@@ -24,6 +25,7 @@
       "android": {
         "buildType": "apk"
       },
+      "credentialsSource": "remote",
       "ios": {},
       "env": {
         "EXPO_PUBLIC_FIREBASE_API_KEY": "@firebase_api_key",

@@ -23,7 +23,8 @@
       },
       "edgeToEdgeEnabled": true,
       "predictiveBackGestureEnabled": false,
-      "package": "com.gbagamscott.framez"
+      "package": "com.gbagamscott.framez",
+      "versionCode": 1
     },
     "web": {
       "output": "static",
