@@ -37,6 +37,17 @@ if (!firebaseConfig.projectId) {
   );
 }
 
+// TEMP: masked debug logging to verify which API key was embedded at build time.
+// Remove this after verification.
+try {
+  const _apiKey = firebaseConfig.apiKey || '';
+  const masked = _apiKey ? `${_apiKey.slice(0, 4)}...${_apiKey.slice(-4)}` : '<<missing>>';
+  // Use console.debug so it is less noisy; still visible in device logs.
+  console.debug('[DEBUG] Firebase apiKey (masked):', masked);
+} catch (e) {
+  // ignore
+}
+
 const app = initializeApp(firebaseConfig);
 
 // Initialize Auth with React Native AsyncStorage persistence so sessions persist across app restarts
