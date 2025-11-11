@@ -9,7 +9,7 @@
     "userInterfaceStyle": "automatic",
     "splash": {
       "backgroundColor": "#000000",
-      "image": "./assets/images/splash-icon.png",
+      "image": "./assets/images/framez-logo-new.jpg",
       "resizeMode": "contain"
     },
     "newArchEnabled": true,
