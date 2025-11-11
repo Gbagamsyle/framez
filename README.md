@@ -1,50 +1,133 @@
-# Welcome to your Expo app 👋
+# Framez 📱
 
-This is an [Expo](https://expo.dev) project created with [`create-expo-app`](https://www.npmjs.com/package/create-expo-app).
+A modern social media app built with React Native, Expo, and Firebase. Share moments, create posts, and connect with others.
 
-## Get started
+## Features
 
-1. Install dependencies
+- 🔐 **Authentication**: Secure user registration and login with Firebase Auth
+- 📝 **Create Posts**: Share photos and text with your network
+- 💬 **Comments**: Engage with posts through comments
+- 👤 **User Profiles**: View and manage your profile
+- 🖼️ **Image Upload**: Upload images to Cloudinary
+- 🌙 **Dark Mode**: Built-in theme toggle for light and dark modes
+- 📱 **Cross-Platform**: Works on iOS and Android
+
+## Tech Stack
+
+- **Frontend**: React Native with Expo
+- **Language**: TypeScript
+- **Navigation**: Expo Router
+- **Backend**: Firebase (Firestore, Authentication)
+- **Styling**: Tailwind CSS with NativeWind
+- **Image Storage**: Cloudinary
+- **State Management**: React Context API
+
+## Getting Started
+
+### Prerequisites
+
+- Node.js (v14 or higher)
+- npm or yarn
+- Expo CLI (`npm install -g expo-cli`)
+
+### Installation
+
+1. Clone the repository
+
+   ```bash
+   git clone https://github.com/Gbagamsyle/framez.git
+   cd framez
+   ```
+
+2. Install dependencies
 
    ```bash
    npm install
    ```
 
-2. Start the app
+3. Setup Environment Variables
+
+   Create a `.env.local` file in the project root with your Firebase and Cloudinary credentials:
+
+   ```
+   EXPO_PUBLIC_FIREBASE_API_KEY=your_api_key
+   EXPO_PUBLIC_FIREBASE_AUTH_DOMAIN=your_auth_domain
+   EXPO_PUBLIC_FIREBASE_PROJECT_ID=your_project_id
+   EXPO_PUBLIC_FIREBASE_STORAGE_BUCKET=your_storage_bucket
+   EXPO_PUBLIC_FIREBASE_MESSAGING_SENDER_ID=your_sender_id
+   EXPO_PUBLIC_FIREBASE_APP_ID=your_app_id
+   EXPO_PUBLIC_CLOUDINARY_CLOUD_NAME=your_cloud_name
+   ```
+
+   See [SECRETS_SETUP.md](./SECRETS_SETUP.md) for detailed setup instructions.
+
+4. Start the app
 
    ```bash
    npx expo start
    ```
 
-In the output, you'll find options to open the app in a
+   In the output, you'll find options to open the app in:
+   - [Android emulator](https://docs.expo.dev/workflow/android-studio-emulator/)
+   - [iOS simulator](https://docs.expo.dev/workflow/ios-simulator/)
+   - [Expo Go](https://expo.dev/go)
 
-- [development build](https://docs.expo.dev/develop/development-builds/introduction/)
-- [Android emulator](https://docs.expo.dev/workflow/android-studio-emulator/)
-- [iOS simulator](https://docs.expo.dev/workflow/ios-simulator/)
-- [Expo Go](https://expo.dev/go), a limited sandbox for trying out app development with Expo
+## Project Structure
 
-You can start developing by editing the files inside the **app** directory. This project uses [file-based routing](https://docs.expo.dev/router/introduction).
-
-## Get a fresh project
-
-When you're ready, run:
-
-```bash
-npm run reset-project
+```
+framez/
+├── app/                    # App screens and navigation
+│   ├── (auth)/            # Authentication screens
+│   ├── (tabs)/            # Tab-based navigation screens
+│   └── screens/           # Individual screen components
+├── components/            # Reusable components
+├── context/              # React Context providers
+├── services/             # Firebase and API services
+├── constants/            # Theme and constant values
+├── hooks/                # Custom React hooks
+└── assets/               # Images and fonts
 ```
 
-This command will move the starter code to the **app-example** directory and create a blank **app** directory where you can start developing.
+## Key Fixes & Updates
 
-## Learn more
+### Firebase Comment System (v1.0.1)
+- Fixed `serverTimestamp()` error in comment creation by using client-side timestamps
+- Improved `arrayUnion()` usage to avoid Firebase validation errors
 
-To learn more about developing your project with Expo, look at the following resources:
+### UI/UX Improvements (v1.0.2)
+- Fixed keyboard covering comment input field
+- Implemented `KeyboardAvoidingView` with proper height handling
+- Added `ScrollView` for better content scrolling on post detail screen
+- Made comment input section sticky at the bottom
 
-- [Expo documentation](https://docs.expo.dev/): Learn fundamentals, or go into advanced topics with our [guides](https://docs.expo.dev/guides).
-- [Learn Expo tutorial](https://docs.expo.dev/tutorial/introduction/): Follow a step-by-step tutorial where you'll create a project that runs on Android, iOS, and the web.
+## Building for Production
 
-## Join the community
+### For Android
 
-Join our community of developers creating universal apps.
+```bash
+eas build --platform android
+```
 
-- [Expo on GitHub](https://github.com/expo/expo): View our open source platform and contribute.
-- [Discord community](https://chat.expo.dev): Chat with Expo users and ask questions.
+See [BUILD_APK.md](./BUILD_APK.md) for detailed APK building instructions.
+
+### For iOS
+
+```bash
+eas build --platform ios
+```
+
+## Contributing
+
+Contributions are welcome! Please feel free to submit a Pull Request.
+
+## License
+
+This project is licensed under the MIT License - see the LICENSE file for details.
+
+## Support
+
+For support, issues, or questions, please open an issue on [GitHub](https://github.com/Gbagamsyle/framez/issues).
+
+## Author
+
+**Gbagamsyle** - [GitHub](https://github.com/Gbagamsyle)
