@@ -116,6 +116,17 @@ See [BUILD_APK.md](./BUILD_APK.md) for detailed APK building instructions.
 eas build --platform ios
 ```
 
+### For Appetize.io (Cloud Testing)
+
+To host your app on Appetize.io for browser-based testing and sharing:
+
+See [APPETIZE_SETUP.md](./APPETIZE_SETUP.md) for complete setup instructions including:
+- Building APK/IPA files
+- Uploading to Appetize.io
+- Sharing preview links
+- CI/CD integration
+- Performance optimization
+
 ## Contributing
 
 Contributions are welcome! Please feel free to submit a Pull Request.
