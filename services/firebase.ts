@@ -1,6 +1,7 @@
-import { addDoc, collection, deleteDoc, doc, getDocs, onSnapshot, orderBy, query, serverTimestamp, where } from 'firebase/firestore';
+import { addDoc, arrayUnion, collection, deleteDoc, doc, getDoc, getDocs, onSnapshot, orderBy, query, serverTimestamp, setDoc, updateDoc, where } from 'firebase/firestore';
 import { db } from '../firebase';
 import { uploadToCloudinary } from './cloudinary';
+
 
 export interface Post {
   id: string;
@@ -10,6 +11,13 @@ export interface Post {
   text: string;
   imageUrl?: string;
   timestamp: Date;
+  comments?: {
+    id?: string;
+    authorId?: string;
+    authorName?: string;
+    text?: string;
+    timestamp?: Date;
+    }[];
 }
 
 // Use Cloudinary for image uploads
@@ -61,6 +69,10 @@ export async function getPosts() {
       text: data.text,
       imageUrl: data.imageUrl,
       timestamp: toDate(data.timestamp),
+      comments: (data.comments || []).map((c: any) => ({
+        ...c,
+        timestamp: toDate(c.timestamp),
+      })),
     } as Post;
   });
 }
@@ -78,6 +90,10 @@ export function listenToPosts(onChange: (posts: Post[]) => void) {
         text: data.text,
         imageUrl: data.imageUrl,
         timestamp: toDate(data.timestamp),
+        comments: (data.comments || []).map((c: any) => ({
+          ...c,
+          timestamp: toDate(c.timestamp),
+        })),
       } as Post;
     });
     onChange(posts);
@@ -102,6 +118,10 @@ export async function getUserPosts(userId: string) {
       text: data.text,
       imageUrl: data.imageUrl,
       timestamp: toDate(data.timestamp),
+      comments: (data.comments || []).map((c: any) => ({
+        ...c,
+        timestamp: toDate(c.timestamp),
+      })),
     } as Post;
   });
 
@@ -137,6 +157,10 @@ export function listenToUserPosts(userId: string, onChange: (posts: Post[]) => v
           text: data.text,
           imageUrl: data.imageUrl,
           timestamp: toDate(data.timestamp),
+          comments: (data.comments || []).map((c: any) => ({
+            ...c,
+            timestamp: toDate(c.timestamp),
+          })),
         } as Post;
       });
 
@@ -161,6 +185,51 @@ export async function deletePost(postId: string) {
     await deleteDoc(postRef);
   } catch (err) {
     console.error('Failed to delete post', err);
+    throw err;
+  }
+}
+
+export async function addComment(postId: string, authorId: string, authorName: string, text: string) {
+  try {
+    const postRef = doc(db, 'posts', postId);
+    const comment = {
+      id: `${Date.now()}`,
+      authorId,
+      authorName,
+      text,
+      timestamp: serverTimestamp(),
+    } as any;
+    // Use arrayUnion to append the comment object
+    await updateDoc(postRef, {
+      comments: arrayUnion(comment),
+    });
+    return comment;
+  } catch (err) {
+    console.error('Failed to add comment', err);
+    throw err;
+  }
+}
+
+// User profile doc helpers (optional user metadata like bio)
+export async function getUserDoc(userId: string) {
+  try {
+    const docRef = doc(db, 'users', userId);
+    const snap = await getDoc(docRef);
+    if (!snap.exists()) return null;
+    return snap.data();
+  } catch (err) {
+    console.error('getUserDoc failed', err);
+    return null;
+  }
+}
+
+export async function updateUserDoc(userId: string, data: Record<string, any>) {
+  try {
+    const docRef = doc(db, 'users', userId);
+    // merge with existing
+    await setDoc(docRef, data, { merge: true });
+  } catch (err) {
+    console.error('updateUserDoc failed', err);
     throw err;
   }
 }

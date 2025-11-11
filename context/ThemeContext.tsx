@@ -1,41 +1,15 @@
-import AsyncStorage from '@react-native-async-storage/async-storage';
-import React, { createContext, useContext, useEffect, useState } from 'react';
-import { useColorScheme } from 'react-native';
-
-type ThemeType = 'light' | 'dark' | 'system';
+import React, { createContext, useContext } from 'react';
 
 interface ThemeContextType {
-  theme: ThemeType;
-  isDark: boolean;
-  setTheme: (theme: ThemeType) => void;
+  theme: 'editorial';
 }
 
 const ThemeContext = createContext<ThemeContextType | undefined>(undefined);
 
 export function ThemeProvider({ children }: { children: React.ReactNode }) {
-  const systemColorScheme = useColorScheme();
-  const [theme, setThemeState] = useState<ThemeType>('system');
-
-  useEffect(() => {
-    // Load saved theme preference
-    AsyncStorage.getItem('theme').then((savedTheme) => {
-      if (savedTheme) {
-        setThemeState(savedTheme as ThemeType);
-      }
-    });
-  }, []);
-
-  const setTheme = async (newTheme: ThemeType) => {
-    setThemeState(newTheme);
-    await AsyncStorage.setItem('theme', newTheme);
-  };
-
-  const isDark = theme === 'system' 
-    ? systemColorScheme === 'dark'
-    : theme === 'dark';
-
+  // Only one theme: editorial
   return (
-    <ThemeContext.Provider value={{ theme, isDark, setTheme }}>
+    <ThemeContext.Provider value={{ theme: 'editorial' }}>
       {children}
     </ThemeContext.Provider>
   );

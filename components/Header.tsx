@@ -2,7 +2,6 @@ import { Ionicons } from '@expo/vector-icons';
 import React from 'react';
 import { Image, StyleSheet, Text, TouchableOpacity, View } from 'react-native';
 import { Colors } from '../constants/theme';
-import { useTheme } from '../context/ThemeContext';
 
 interface HeaderProps {
   title: string;
@@ -12,8 +11,7 @@ interface HeaderProps {
 }
 
 export function Header({ title, showBack, onBack, rightComponent }: HeaderProps) {
-  const { isDark } = useTheme();
-  const theme = isDark ? Colors.dark : Colors.light;
+  const theme = Colors;
   return (
     <View style={[styles.container, { backgroundColor: theme.card, borderBottomColor: theme.cardBorder }]}>
       <View style={styles.leftContainer}>
@@ -22,17 +20,23 @@ export function Header({ title, showBack, onBack, rightComponent }: HeaderProps)
             <Ionicons name="chevron-back" size={24} color={theme.text} />
           </TouchableOpacity>
         ) : (
-          <View style={[styles.logoWrapper, { backgroundColor: isDark ? '#000000' : 'transparent' }]}>
-            <Image
-              source={isDark ? require('../assets/images/frames dark mode logo.jpg') : require('../assets/images/Framez logo.png')}
-              style={styles.logo}
-              resizeMode="contain"
-            />
-          </View>
+          <View style={[styles.logoWrapper, { backgroundColor: 'transparent' }]}> 
+              <Image
+                source={require('../assets/images/framez-logo-new.jpg')}
+                style={styles.logo}
+                resizeMode="contain"
+                accessibilityLabel="Framez logo"
+              />
+            </View>
         )}
       </View>
 
-      <Text style={[styles.title, { color: theme.text }]}>{title}</Text>
+      {/* Centered title container — positioned absolutely so it remains centered regardless of left/right widths */}
+      <View pointerEvents="none" style={styles.centerContainer}>
+        <Text style={[styles.title, { color: theme.text }]} numberOfLines={1} ellipsizeMode="tail">
+          {title}
+        </Text>
+      </View>
 
       <View style={styles.rightContainer}>
         {rightComponent}
@@ -53,12 +57,16 @@ const styles = StyleSheet.create({
     borderBottomColor: '#ddd',
   },
   leftContainer: {
-    width: 40,
-    alignItems: 'flex-start',
+    width: 56,
+    alignItems: 'center',
+    justifyContent: 'center',
   },
   rightContainer: {
-    width: 40,
-    alignItems: 'flex-end',
+    width: 110,
+    flexDirection: 'row',
+    alignItems: 'center',
+    justifyContent: 'flex-end',
+    paddingRight: 8,
   },
   backButton: {
     padding: 8,
@@ -79,5 +87,15 @@ const styles = StyleSheet.create({
     justifyContent: 'center',
     alignItems: 'center',
     overflow: 'hidden',
+  },
+  centerContainer: {
+    position: 'absolute',
+    left: 0,
+    right: 0,
+    top: 0,
+    bottom: 0,
+    justifyContent: 'center',
+    alignItems: 'center',
+    paddingHorizontal: 76, // provide a little padding so long titles don't collide with left/right actions
   },
 });

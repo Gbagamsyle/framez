@@ -6,25 +6,29 @@ import {
     Alert,
     FlatList,
     Image,
+    Modal,
     StyleSheet,
     Text,
+    TextInput,
     TouchableOpacity,
     View,
 } from 'react-native';
 import { Header } from '../../components/Header';
 import { PostCard } from '../../components/PostCard';
-import { ThemeToggle } from '../../components/ThemeToggle';
 import { Colors } from '../../constants/theme';
 import { useAuth } from '../../context/AuthContext';
-import { useTheme } from '../../context/ThemeContext';
-import { deletePost, listenToUserPosts, Post, uploadImageAsync } from '../../services/firebase';
+import { deletePost, getUserDoc, listenToUserPosts, Post, updateUserDoc, uploadImageAsync } from '../../services/firebase';
 
 export function ProfileScreen() {
   const { user, logout, updateUserProfile } = useAuth();
-  const { isDark } = useTheme();
-  const theme = isDark ? Colors.dark : Colors.light;
+  const theme = Colors;
   const [posts, setPosts] = useState<Post[]>([]);
   const [loading, setLoading] = useState(true);
+  const [bio, setBio] = useState<string>('');
+  const [editModalVisible, setEditModalVisible] = useState(false);
+  const [editName, setEditName] = useState<string>('');
+  const [editBio, setEditBio] = useState<string>('');
+  const [saving, setSaving] = useState(false);
   // Use a real-time listener so post list and count update instantly
   useEffect(() => {
     let unsubscribe: () => void;
@@ -49,6 +53,26 @@ export function ProfileScreen() {
       if (unsubscribe) {
         unsubscribe();
       }
+    };
+  }, [user]);
+
+  // load user profile doc (bio etc.)
+  useEffect(() => {
+    let mounted = true;
+    const load = async () => {
+      if (!user?.uid) return;
+      try {
+        const doc = await getUserDoc(user.uid);
+        if (mounted) {
+          setBio((doc && (doc.bio || '')) || '');
+        }
+      } catch (err) {
+        console.error('Failed to load user doc', err);
+      }
+    };
+    load();
+    return () => {
+      mounted = false;
     };
   }, [user]);
 
@@ -78,6 +102,26 @@ export function ProfileScreen() {
         },
       ],
     );
+  };
+
+  const saveProfile = async () => {
+    if (!user) return;
+    setSaving(true);
+    try {
+      // Update Firebase Auth displayName if changed
+      if (editName && editName !== user.displayName) {
+        await updateUserProfile({ displayName: editName });
+      }
+      // Update user doc (bio)
+      await updateUserDoc(user.uid, { bio: editBio });
+      setBio(editBio || '');
+      setEditModalVisible(false);
+    } catch (err) {
+      console.error('Failed to save profile', err);
+      Alert.alert('Error', 'Failed to update profile. Please try again.');
+    } finally {
+      setSaving(false);
+    }
   };
 
   // In the updateProfileImage function, replace the ImagePicker call with:
@@ -118,26 +162,54 @@ export function ProfileScreen() {
   };
 
   const ProfileHeader = () => (
-    <View style={[styles.profileHeader, { backgroundColor: theme.card }]}>
-      <TouchableOpacity onPress={updateProfileImage}>
-        <Image
-          source={{
-            uri: user?.photoURL || 'https://via.placeholder.com/100',
-          }}
-          style={styles.avatar}
-        />
-        <View style={[styles.editAvatarButton, { backgroundColor: theme.primary, borderColor: theme.background }]}>
-          <Ionicons name="camera" size={16} color={theme.background} />
+    <View style={[styles.profileHeader, { backgroundColor: theme.card }]}> 
+      <View style={styles.headerInner}>
+        <TouchableOpacity onPress={updateProfileImage} style={styles.avatarWrapper}>
+          <Image
+            source={{ uri: user?.photoURL || 'https://via.placeholder.com/150' }}
+            style={styles.avatarLarge}
+          />
+          <View style={[styles.editAvatarButton, { backgroundColor: theme.accent, borderColor: theme.background }]}> 
+            <Ionicons name="camera" size={16} color={theme.background} />
+          </View>
+        </TouchableOpacity>
+
+          <View style={styles.headerMeta}>
+          <Text style={[styles.name, { color: theme.text, fontFamily: 'serif', fontSize: 28, letterSpacing: -1, textTransform: 'uppercase' }]}>{user?.displayName || 'Anonymous'}</Text>
+          <Text style={[styles.email, { color: theme.text, fontFamily: 'sans-serif' }]}>{user?.email}</Text>
+
+          <View style={styles.actionRow}>
+            <TouchableOpacity
+              style={[styles.editButton, { backgroundColor: theme.accent }]}
+              onPress={() => {
+                setEditName(user?.displayName || '');
+                setEditBio(bio || '');
+                setEditModalVisible(true);
+              }}
+            > 
+              <Text style={[styles.editButtonText, { fontFamily: 'sans-serif', letterSpacing: 1 }]}>Edit Profile</Text>
+            </TouchableOpacity>
+            <TouchableOpacity style={[styles.logoutButton, { borderColor: theme.cardBorder }]} onPress={handleLogout}>
+              <Text style={[styles.logoutButtonText, { color: theme.accent, fontFamily: 'sans-serif', letterSpacing: 1 }]}>Logout</Text>
+            </TouchableOpacity>
+          </View>
         </View>
-      </TouchableOpacity>
+      </View>
 
-      <Text style={[styles.name, { color: theme.text }]}>{user?.displayName || 'Anonymous'}</Text>
-      <Text style={[styles.email, { color: theme.icon }]}>{user?.email}</Text>
+      <Text style={[styles.bio, { color: theme.text, fontFamily: 'serif', fontSize: 16, marginTop: 24 }]}>{bio || 'Welcome to my profile — share great moments and connect with others.'}</Text>
 
-      <View style={[styles.stats, { borderTopColor: theme.cardBorder }]}>
-        <View style={styles.stat}>
-          <Text style={[styles.statNumber, { color: theme.text }]}>{posts.length}</Text>
-          <Text style={[styles.statLabel, { color: theme.icon }]}>Posts</Text>
+      <View style={[styles.stats, { borderTopColor: theme.cardBorder }]}> 
+        <View style={styles.statBadge}>
+          <Text style={[styles.statNumber, { color: theme.text, fontFamily: 'serif', fontSize: 22 }]}>{posts.length}</Text>
+          <Text style={[styles.statLabel, { color: theme.accent, fontFamily: 'sans-serif', fontWeight: '700', textTransform: 'uppercase', letterSpacing: 2 }]}>Posts</Text>
+        </View>
+        <View style={styles.statBadge}>
+          <Text style={[styles.statNumber, { color: theme.text, fontFamily: 'serif', fontSize: 22 }]}>0</Text>
+          <Text style={[styles.statLabel, { color: theme.accent, fontFamily: 'sans-serif', fontWeight: '700', textTransform: 'uppercase', letterSpacing: 2 }]}>Followers</Text>
+        </View>
+        <View style={styles.statBadge}>
+          <Text style={[styles.statNumber, { color: theme.text, fontFamily: 'serif', fontSize: 22 }]}>{0}</Text>
+          <Text style={[styles.statLabel, { color: theme.accent, fontFamily: 'sans-serif', fontWeight: '700', textTransform: 'uppercase', letterSpacing: 2 }]}>Following</Text>
         </View>
       </View>
     </View>
@@ -158,11 +230,66 @@ export function ProfileScreen() {
           title="Profile"
           rightComponent={
             <TouchableOpacity onPress={handleLogout}>
-              <Ionicons name="log-out-outline" size={24} color={theme.primary} />
+              <Ionicons name="log-out-outline" size={24} color={theme.accent} />
             </TouchableOpacity>
           }
         />
       </View>
+
+      {/* Edit Profile Modal (polished) */}
+      <Modal visible={editModalVisible} transparent animationType="fade" onRequestClose={() => setEditModalVisible(false)}>
+        <View style={styles.modalBackdrop}>
+          <View style={[styles.modalCard, { backgroundColor: theme.card, borderColor: theme.cardBorder }]}>
+            <View style={styles.modalHeader}>
+              <Text style={[{ color: theme.text, fontSize: 18, fontWeight: '700' }]}>Edit Profile</Text>
+              <TouchableOpacity onPress={() => setEditModalVisible(false)} style={styles.modalCloseButton}>
+                <Ionicons name="close" size={20} color={theme.text} />
+              </TouchableOpacity>
+            </View>
+
+            <View style={styles.modalBody}>
+              <View style={styles.modalAvatarRow}>
+                <Image source={{ uri: user?.photoURL || 'https://via.placeholder.com/150' }} style={styles.modalAvatarPreview} />
+                <View style={{ marginLeft: 12, flex: 1 }}>
+                  <Text style={[{ color: theme.text, fontWeight: '700', marginBottom: 6 }]}>Profile Photo</Text>
+                  <TouchableOpacity onPress={updateProfileImage} style={[styles.changeAvatarButton, { borderColor: theme.cardBorder }]}> 
+                    <Text style={{ color: theme.accent, fontWeight: '700' }}>Change Avatar</Text>
+                  </TouchableOpacity>
+                </View>
+              </View>
+
+              <Text style={[styles.modalFieldLabel, { color: theme.text }]}>Display name</Text>
+              <TextInput
+                value={editName}
+                onChangeText={setEditName}
+                placeholder="Display name"
+                placeholderTextColor={Colors.secondary}
+                style={[styles.modalInput, { backgroundColor: theme.inputBackground, color: theme.text }]}
+              />
+
+              <Text style={[styles.modalFieldLabel, { color: theme.text }]}>Short bio</Text>
+              <TextInput
+                value={editBio}
+                onChangeText={setEditBio}
+                placeholder="Tell people about yourself"
+                placeholderTextColor={Colors.secondary}
+                style={[styles.modalInput, { backgroundColor: theme.inputBackground, color: theme.text, minHeight: 90, textAlignVertical: 'top' }]}
+                multiline
+              />
+            </View>
+
+            <View style={styles.modalActions}>
+              <TouchableOpacity onPress={() => setEditModalVisible(false)} style={styles.modalButton}>
+                <Text style={{ color: theme.accent, fontWeight: '700' }}>Cancel</Text>
+              </TouchableOpacity>
+
+              <TouchableOpacity onPress={saveProfile} style={[styles.modalButton, styles.modalButtonPrimary]} disabled={saving}>
+                {saving ? <ActivityIndicator color="#fff" /> : <Text style={{ color: '#fff', fontWeight: '700' }}>Save</Text>}
+              </TouchableOpacity>
+            </View>
+          </View>
+        </View>
+      </Modal>
 
       <FlatList
         data={posts}
@@ -173,9 +300,6 @@ export function ProfileScreen() {
         ListHeaderComponent={ProfileHeader}
         contentContainerStyle={styles.list}
       />
-      <View style={styles.themeToggleContainer}>
-        <ThemeToggle />
-      </View>
     </View>
   );
 }
@@ -207,14 +331,14 @@ const styles = StyleSheet.create({
     position: 'absolute',
     right: 0,
     bottom: 0,
-    backgroundColor: Colors.light.primary,
+    backgroundColor: Colors.accent,
     borderRadius: 15,
     width: 30,
     height: 30,
     justifyContent: 'center',
     alignItems: 'center',
     borderWidth: 2,
-    borderColor: Colors.light.background,
+    borderColor: Colors.background,
   },
   name: {
     fontSize: 20,
@@ -252,5 +376,129 @@ const styles = StyleSheet.create({
     right: 20,
     borderRadius: 8,
     overflow: 'hidden',
+  },
+  headerInner: {
+    flexDirection: 'row',
+    alignItems: 'center',
+  },
+  avatarWrapper: {
+    marginRight: 16,
+  },
+  avatarLarge: {
+    width: 110,
+    height: 110,
+    borderRadius: 55,
+  },
+  headerMeta: {
+    flex: 1,
+  },
+  actionRow: {
+    flexDirection: 'row',
+    marginTop: 12,
+  },
+  editButton: {
+    paddingVertical: 8,
+    paddingHorizontal: 14,
+    borderRadius: 8,
+    marginRight: 8,
+  },
+  editButtonText: {
+    color: '#fff',
+    fontWeight: '600',
+  },
+  logoutButton: {
+    paddingVertical: 8,
+    paddingHorizontal: 14,
+    borderRadius: 8,
+    borderWidth: 1,
+  },
+  logoutButtonText: {
+    fontWeight: '600',
+  },
+  bio: {
+    marginTop: 12,
+    fontSize: 14,
+    textAlign: 'center',
+  },
+  statBadge: {
+    flex: 1,
+    alignItems: 'center',
+    paddingVertical: 12,
+  },
+  // Modal styles
+  modalBackdrop: {
+    flex: 1,
+    backgroundColor: 'rgba(0,0,0,0.5)',
+    justifyContent: 'center',
+    alignItems: 'center',
+    padding: 20,
+  },
+  modalCard: {
+    width: '100%',
+    maxWidth: 720,
+    borderRadius: 12,
+    padding: 16,
+    borderWidth: StyleSheet.hairlineWidth,
+    elevation: 6,
+    shadowColor: '#000',
+    shadowOffset: { width: 0, height: 6 },
+    shadowOpacity: 0.12,
+    shadowRadius: 12,
+  },
+  modalHeader: {
+    flexDirection: 'row',
+    alignItems: 'center',
+    justifyContent: 'space-between',
+    marginBottom: 12,
+  },
+  modalCloseButton: {
+    padding: 6,
+    borderRadius: 8,
+  },
+  modalBody: {
+    marginBottom: 12,
+  },
+  modalAvatarRow: {
+    flexDirection: 'row',
+    alignItems: 'center',
+    marginBottom: 12,
+  },
+  modalAvatarPreview: {
+    width: 86,
+    height: 86,
+    borderRadius: 44,
+    backgroundColor: '#eee',
+  },
+  changeAvatarButton: {
+    paddingHorizontal: 12,
+    paddingVertical: 8,
+    borderRadius: 8,
+    borderWidth: StyleSheet.hairlineWidth,
+  },
+  modalFieldLabel: {
+    fontSize: 12,
+    marginBottom: 6,
+    fontWeight: '700',
+  },
+  modalInput: {
+    paddingHorizontal: 10,
+    paddingVertical: 8,
+    borderRadius: 8,
+    marginBottom: 12,
+  },
+  modalActions: {
+    flexDirection: 'row',
+    justifyContent: 'flex-end',
+    gap: 8,
+  },
+  modalButton: {
+    paddingHorizontal: 12,
+    paddingVertical: 10,
+    borderRadius: 8,
+    alignItems: 'center',
+    justifyContent: 'center',
+  },
+  modalButtonPrimary: {
+    backgroundColor: Colors.accent,
   },
 });
