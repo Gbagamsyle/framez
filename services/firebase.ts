@@ -34,14 +34,21 @@ export async function createPost(authorId: string, authorName: string, text: str
     }
   }
 
-  const post = {
+  // Build post object, excluding undefined values (Firebase doesn't allow undefined)
+  const post: any = {
     authorId,
     authorName,
-    authorPhotoUrl,
     text,
-    imageUrl,
     timestamp: serverTimestamp(),
-  } as const;
+  };
+
+  // Only include optional fields if they have values
+  if (imageUrl) {
+    post.imageUrl = imageUrl;
+  }
+  if (authorPhotoUrl) {
+    post.authorPhotoUrl = authorPhotoUrl;
+  }
 
   await addDoc(collection(db, 'posts'), post);
 }

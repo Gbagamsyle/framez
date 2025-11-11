@@ -1,6 +1,6 @@
 # Firebase Secrets Management Guide
 
-This guide explains how to securely manage Firebase credentials in development and production environments.
+This guide explains how to securely manage Firebase and Cloudinary credentials in development and production environments.
 
 ## Overview
 
@@ -36,7 +36,22 @@ You can find these values in your Firebase Console:
 2. Under **Your apps**, find your Web app.
 3. Copy the config object values.
 
-### 3. Verify `.env.local` is in `.gitignore`
+### 3. Add Cloudinary credentials
+
+Add the following to your `.env.local` file:
+
+```
+EXPO_PUBLIC_CLOUDINARY_CLOUD_NAME=your-cloud-name
+EXPO_PUBLIC_CLOUDINARY_UPLOAD_PRESET=framez
+```
+
+To get these values:
+1. Go to your [Cloudinary Dashboard](https://cloudinary.com/console/dashboard)
+2. Find your **Cloud Name** in the top-left area
+3. Go to **Settings** → **Upload** → **Upload presets**
+4. Use the existing `framez` preset (must be **Unsigned** for public uploads)
+
+### 4. Verify `.env.local` is in `.gitignore`
 
 The workspace should already have `.env*` in `.gitignore`, but verify:
 
@@ -46,7 +61,7 @@ cat .gitignore | grep ".env"
 
 You should see `.env.local` or `.env.*` listed.
 
-### 4. Start development
+### 5. Start development
 
 ```bash
 npm start
@@ -66,7 +81,7 @@ Expo will automatically load variables from `.env.local` and inject them into th
 
 ### 1. Create secrets on EAS
 
-Replace the values with your actual Firebase credentials:
+Replace the values with your actual Firebase and Cloudinary credentials:
 
 ```bash
 eas secret:create --scope project --name firebase_api_key --value "AIzaSy..."
@@ -75,6 +90,8 @@ eas secret:create --scope project --name firebase_project_id --value "your-proje
 eas secret:create --scope project --name firebase_storage_bucket --value "your-project.appspot.com"
 eas secret:create --scope project --name firebase_messaging_sender_id --value "1234567890"
 eas secret:create --scope project --name firebase_app_id --value "1:1234567890:web:abcdef123456"
+eas secret:create --scope project --name cloudinary_cloud_name --value "your-cloud-name"
+eas secret:create --scope project --name cloudinary_upload_preset --value "framez"
 ```
 
 ### 2. Verify secrets were created
@@ -213,6 +230,8 @@ Once the build completes, EAS provides a download link or QR code. Test the APK 
 | `EXPO_PUBLIC_FIREBASE_STORAGE_BUCKET` | `framez-123c7.appspot.com` | Yes |
 | `EXPO_PUBLIC_FIREBASE_MESSAGING_SENDER_ID` | `595656282981` | Yes |
 | `EXPO_PUBLIC_FIREBASE_APP_ID` | `1:595656282981:web:3c5f1250d54e3fcb60c78c` | Yes |
+| `EXPO_PUBLIC_CLOUDINARY_CLOUD_NAME` | `dgbcfpym4` | Yes |
+| `EXPO_PUBLIC_CLOUDINARY_UPLOAD_PRESET` | `framez` | Yes |
 
 ---
 

@@ -3,12 +3,18 @@
 const CLOUD_NAME = process.env.EXPO_PUBLIC_CLOUDINARY_CLOUD_NAME || 'dgbcfpym4';
 const UPLOAD_PRESET = process.env.EXPO_PUBLIC_CLOUDINARY_UPLOAD_PRESET || 'framez';
 
-interface UploadResponse {
-  secure_url: string;
-  public_id: string;
-}
+// Log configuration on startup for debugging
+console.log('[Cloudinary Config] Cloud Name:', CLOUD_NAME);
+console.log('[Cloudinary Config] Upload Preset:', UPLOAD_PRESET);
 
 export async function uploadToCloudinary(fileOrUri: string | File): Promise<string> {
+  // Validate configuration
+  if (!CLOUD_NAME) {
+    throw new Error('Cloudinary cloud name is not configured. Set EXPO_PUBLIC_CLOUDINARY_CLOUD_NAME environment variable.');
+  }
+  if (!UPLOAD_PRESET) {
+    throw new Error('Cloudinary upload preset is not configured. Set EXPO_PUBLIC_CLOUDINARY_UPLOAD_PRESET environment variable.');
+  }
   try {
     // Create form data
     const formData = new FormData();
@@ -44,12 +50,19 @@ export async function uploadToCloudinary(fileOrUri: string | File): Promise<stri
       },
     });
 
-    const data: UploadResponse = await response.json();
+    const data = await response.json();
 
     if (!response.ok) {
-      throw new Error(data.secure_url || 'Upload failed');
+      console.error('Cloudinary upload error response:', data);
+      throw new Error(data.error?.message || `Upload failed with status ${response.status}`);
     }
 
+    if (!data.secure_url) {
+      console.error('Cloudinary response missing secure_url:', data);
+      throw new Error('Upload response missing secure_url');
+    }
+
+    console.log('Successfully uploaded to Cloudinary:', data.secure_url);
     return data.secure_url;
   } catch (error) {
     console.error('Error uploading to Cloudinary:', error);

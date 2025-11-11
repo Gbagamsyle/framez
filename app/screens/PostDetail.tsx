@@ -50,8 +50,8 @@ export function PostDetailScreen() {
             <PostCard post={post as any} />
           </ScrollView>
 
-          <View style={{ paddingHorizontal: 16, paddingVertical: 12, backgroundColor: theme.background, borderTopWidth: 1, borderTopColor: Colors.cardBorder }}>
-            <Text style={{ color: theme.text, marginBottom: 8, fontWeight: '600' }}>Add a comment</Text>
+          <View style={{ paddingHorizontal: 16, paddingVertical: 8, paddingBottom: 35, backgroundColor: theme.background, borderTopWidth: 1, borderTopColor: Colors.cardBorder }}>
+            <Text style={{ color: theme.text, marginBottom: 6, fontWeight: '600', fontSize: 14 }}>Add a comment</Text>
             <View style={{ flexDirection: 'row', alignItems: 'center' }}>
               <TextInput
                 value={commentText}
