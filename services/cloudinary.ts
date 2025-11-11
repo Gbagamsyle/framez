@@ -1,6 +1,7 @@
 // Cloudinary configuration
-const CLOUD_NAME = 'dgbcfpym4';  // Get this from your Cloudinary dashboard
-const UPLOAD_PRESET = 'framez';  // Create an unsigned upload preset in Cloudinary
+// Prefer environment variables so we can configure per-environment (dev/EAS)
+const CLOUD_NAME = process.env.EXPO_PUBLIC_CLOUDINARY_CLOUD_NAME || 'dgbcfpym4';
+const UPLOAD_PRESET = process.env.EXPO_PUBLIC_CLOUDINARY_UPLOAD_PRESET || 'framez';
 
 interface UploadResponse {
   secure_url: string;
@@ -33,17 +34,15 @@ export async function uploadToCloudinary(fileOrUri: string | File): Promise<stri
     formData.append('upload_preset', UPLOAD_PRESET);
 
     // Upload to Cloudinary
-    const response = await fetch(
-      `https://api.cloudinary.com/v1_1/${CLOUD_NAME}/image/upload`,
-      {
-        method: 'POST',
-        body: formData,
-        headers: {
-          'Accept': 'application/json',
-          'Content-Type': 'multipart/form-data',
-        },
-      }
-    );
+    // Important: do NOT manually set the Content-Type header for multipart/form-data
+    // The fetch implementation will set the correct boundary for FormData.
+    const response = await fetch(`https://api.cloudinary.com/v1_1/${CLOUD_NAME}/image/upload`, {
+      method: 'POST',
+      body: formData,
+      headers: {
+        Accept: 'application/json',
+      },
+    });
 
     const data: UploadResponse = await response.json();
 
