@@ -14,8 +14,9 @@
         "EXPO_PUBLIC_FIREBASE_STORAGE_BUCKET": "@firebase_storage_bucket",
         "EXPO_PUBLIC_FIREBASE_MESSAGING_SENDER_ID": "@firebase_messaging_sender_id",
         "EXPO_PUBLIC_FIREBASE_APP_ID": "@firebase_app_id",
-        "EXPO_PUBLIC_CLOUDINARY_CLOUD_NAME": "dgbcfpym4"
-        }
+        "EXPO_PUBLIC_CLOUDINARY_CLOUD_NAME": "dgbcfpym4",
+        "EXPO_PUBLIC_CLOUDINARY_UPLOAD_PRESET": "framez"
+      }
     },
     "production": {
       "android": { "buildType": "apk" },

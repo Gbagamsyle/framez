@@ -24,13 +24,19 @@ export interface Post {
 export const uploadImageAsync = uploadToCloudinary;
 
 export async function createPost(authorId: string, authorName: string, text: string, imageSource?: string | File, authorPhotoUrl?: string) {
+  console.log('🔵 createPost: Starting post creation', { authorId, authorName, hasImage: !!imageSource });
+  
   let imageUrl: string | undefined;
 
   if (imageSource) {
     try {
+      console.log('🔵 createPost: Uploading image to Cloudinary...');
       imageUrl = await uploadImageAsync(imageSource);
+      console.log('✅ createPost: Image uploaded successfully', imageUrl);
     } catch (err) {
-      console.error('Failed to upload post image', err);
+      console.error('❌ createPost: Failed to upload post image', err);
+      // Don't throw - allow post without image
+      // But log the error so user can see it in app
     }
   }
 
@@ -50,7 +56,14 @@ export async function createPost(authorId: string, authorName: string, text: str
     post.authorPhotoUrl = authorPhotoUrl;
   }
 
-  await addDoc(collection(db, 'posts'), post);
+  console.log('🔵 createPost: Saving to Firestore', { ...post, timestamp: 'serverTimestamp' });
+  try {
+    await addDoc(collection(db, 'posts'), post);
+    console.log('✅ createPost: Post created successfully');
+  } catch (err) {
+    console.error('❌ createPost: Failed to save post to Firestore', err);
+    throw err;
+  }
 }
 
 function toDate(ts: any) {
@@ -85,8 +98,10 @@ export async function getPosts() {
 }
 
 export function listenToPosts(onChange: (posts: Post[]) => void) {
+  console.log('🔵 listenToPosts: Setting up real-time listener...');
   const q = query(collection(db, 'posts'), orderBy('timestamp', 'desc'));
   const unsubscribe = onSnapshot(q, (querySnapshot: any) => {
+    console.log('📡 listenToPosts: Received snapshot with', querySnapshot.docs.length, 'posts');
     const posts = querySnapshot.docs.map((d: any) => {
       const data = d.data() as any;
       return {
@@ -103,9 +118,10 @@ export function listenToPosts(onChange: (posts: Post[]) => void) {
         })),
       } as Post;
     });
+    console.log('✅ listenToPosts: Processed posts, calling onChange');
     onChange(posts);
   }, (error) => {
-    console.error('listenToPosts onSnapshot error', error);
+    console.error('❌ listenToPosts error', error);
   });
 
   return unsubscribe;
